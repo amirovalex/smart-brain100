@@ -21,3 +21,8 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	left:0;
 	z-index: -1;
 }
+
+.menu-background {
+	background-color: rgba(0,0,0,0.2);
+	color:#fff !important;
+}
