@@ -36,7 +36,8 @@ class SignIn extends React.Component {
             this.props.onRouteChange("home");
           }
           this.setState({ isSigningIn: false });
-        });
+        })
+        .catch((err) => console.log(err));
     }
   };
 
