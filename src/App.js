@@ -9,6 +9,12 @@ import Particles from "react-particles-js";
 import SignIn from "./components/SignIn/SignIn";
 import Register from "./components/Register/Register";
 import Spinner from "./components/Spinner/Spinner";
+import Clarifai from "clarifai";
+
+const app = new Clarifai.App({
+  apiKey: "65a3206fd009407f9acdd7fdeabdc162",
+});
+
 const particlesOptions = {
   particles: {
     number: {
@@ -56,10 +62,11 @@ class App extends Component {
   };
 
   calculateFaceLocation = (data) => {
+    console.log(data);
     const clarifaiFace =
       data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById("inputimage");
-    if (image.height > 0) {
+    if (image && image.height > 0) {
       console.log(image);
       const width = Number(image.width);
       const height = Number(image.height);
@@ -88,8 +95,8 @@ class App extends Component {
   onButtonSubmit = async () => {
     try {
       if (!this.state.isFetchingImage) {
-        this.setState({ isFetchingImage: true });
         this.setState({ imageUrl: this.state.input });
+        this.setState({ isFetchingImage: true });
         const response = await fetch(
           "https://floating-ravine-20611.herokuapp.com/imageurl",
           {
@@ -133,10 +140,19 @@ class App extends Component {
   };
 
   onHandleSubmitImage = async () => {
-    const imageResp = await this.onButtonSubmit();
-    console.log(this.state);
-    console.log(imageResp);
-    this.displayFaceBox(this.calculateFaceLocation(imageResp));
+    try {
+      this.setState({ isFetchingImage: true });
+      if (!this.state.isFetchingImage) {
+        const imageResp = await this.handleImageSearch();
+        console.log(this.state);
+        console.log(imageResp);
+        this.displayFaceBox(this.calculateFaceLocation(imageResp));
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      this.setState({ isFetchingImage: false });
+    }
   };
 
   onRouteChange = (route) => {
@@ -146,6 +162,28 @@ class App extends Component {
       this.setState({ isSignedIn: true });
     }
     this.setState({ route: route });
+  };
+
+  handleImageSearch = async () => {
+    try {
+      this.setState({ imageUrl: this.state.input });
+      const data = await app.models.predict(
+        Clarifai.FACE_DETECT_MODEL,
+        this.state.input
+      );
+      console.log(data);
+      if (data) {
+        this.setState(
+          Object.assign(this.state.user, {
+            entries: this.state.user.entries + 1,
+          })
+        );
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+      this.setState({ isFetchingImage: false });
+    }
   };
 
   render() {

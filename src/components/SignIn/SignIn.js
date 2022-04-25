@@ -41,6 +41,21 @@ class SignIn extends React.Component {
     }
   };
 
+  submitSignInOffline = () => {
+    this.setState({ isSigningIn: true });
+    setTimeout(() => {
+      this.props.loadUser({
+        id: "1",
+        name: "User",
+        email: this.props.signInEmail,
+        entries: 0,
+        joined: "",
+      });
+      this.props.onRouteChange("home");
+      this.setState({ isSigningIn: false });
+    }, 1000);
+  };
+
   render() {
     const { onRouteChange } = this.props;
     return this.state.isSigningIn ? (
@@ -87,7 +102,7 @@ class SignIn extends React.Component {
             </fieldset>
             <div className="">
               <input
-                onClick={this.onSubmitSignIn}
+                onClick={this.submitSignInOffline}
                 className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib white"
                 type="submit"
                 value="Sign in"

@@ -46,6 +46,21 @@ class Register extends React.Component {
     }
   };
 
+  submitRegisterOffline = () => {
+    this.setState({ isRegistring: true });
+    setTimeout(() => {
+      this.props.loadUser({
+        id: "1",
+        name: "User",
+        email: this.props.registerEmail,
+        entries: 0,
+        joined: "",
+      });
+      this.props.onRouteChange("home");
+      this.setState({ isRegistring: false });
+    }, 1000);
+  };
+
   render() {
     const { onRouteChange } = this.props;
     return this.state.isRegistring ? (
@@ -104,7 +119,7 @@ class Register extends React.Component {
             </fieldset>
             <div className="">
               <input
-                onClick={this.onSubmitRegister}
+                onClick={this.submitRegisterOffline}
                 className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib white"
                 type="submit"
                 value="Register"
